@@ -58,12 +58,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { api } from '@/utils/api'
+import { useApiError } from '@/composables/useErrorHandler'
 
 const stats = ref({
   users: 0,
   roles: 0,
   menus: 0
 })
+
+const { handleError } = useApiError()
 
 onMounted(async () => {
   try {
@@ -78,7 +81,14 @@ onMounted(async () => {
     stats.value.roles = rolesRes.data.data.total
     stats.value.menus = menusRes.data.data.total
   } catch (error) {
-    console.error('获取统计数据失败:', error)
+    // 如果是权限错误，不显示错误信息，只显示默认值
+    if (error?.response?.status === 403) {
+      console.warn('部分统计数据无法获取，权限不足')
+      // 可以设置默认值或显示友好的提示
+      return
+    }
+
+    handleError(error, '获取统计数据失败')
   }
 })
 </script>

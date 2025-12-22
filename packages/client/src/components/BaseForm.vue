@@ -34,7 +34,7 @@
                 :required="field.required"
                 :placeholder="field.placeholder"
                 :maxlength="field.maxlength"
-                @blur="validateField(field)"
+                @blur="validateField(field.key, form[field.key])"
               />
 
               <!-- 密码输入 -->
@@ -47,7 +47,7 @@
                 :disabled="loading || field.disabled"
                 :required="field.required"
                 :placeholder="field.placeholder"
-                @blur="validateField(field)"
+                @blur="validateField(field.key, form[field.key])"
               />
 
               <!-- 数字输入 -->
@@ -62,7 +62,7 @@
                 :placeholder="field.placeholder"
                 :min="field.min"
                 :max="field.max"
-                @blur="validateField(field)"
+                @blur="validateField(field.key, form[field.key])"
               />
 
               <!-- 文本域 -->
@@ -75,7 +75,7 @@
                 :required="field.required"
                 :placeholder="field.placeholder"
                 :rows="field.rows || 3"
-                @blur="validateField(field)"
+                @blur="validateField(field.key, form[field.key])"
               />
 
               <!-- 选择器 -->
@@ -85,7 +85,7 @@
                 class="form-select"
                 :class="{ 'form-input-error': errors[field.key] }"
                 :disabled="loading || field.disabled"
-                @change="validateField(field)"
+                @change="validateField(field.key, form[field.key])"
               >
                 <option v-for="option in field.options" :key="option.value" :value="option.value">
                   {{ option.label }}
@@ -236,15 +236,16 @@ const isFormValid = computed(() => {
 })
 
 // 验证单个字段
-const validateField = (field: FormField) => {
-  const value = props.form[field.key]
+const validateField = (fieldKey: string, value: any) => {
+  const field = props.fields.flat().find(f => f.key === fieldKey)
+  if (!field) return
 
   // 清除之前的错误
-  delete errors[field.key]
+  delete errors[fieldKey]
 
   // 必填验证
   if (field.required && (!value || (Array.isArray(value) && value.length === 0))) {
-    errors[field.key] = `${field.label} 不能为空`
+    errors[fieldKey] = `${field.label} 不能为空`
     return
   }
 
@@ -252,7 +253,7 @@ const validateField = (field: FormField) => {
   if (field.validator && value) {
     const error = field.validator(value)
     if (error) {
-      errors[field.key] = error
+      errors[fieldKey] = error
       return
     }
   }
@@ -261,7 +262,7 @@ const validateField = (field: FormField) => {
   if (field.type === 'email' && value) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(value)) {
-      errors[field.key] = '请输入有效的邮箱地址'
+      errors[fieldKey] = '请输入有效的邮箱地址'
       return
     }
   }
@@ -269,11 +270,11 @@ const validateField = (field: FormField) => {
   // 数字范围验证
   if (field.type === 'number' && value !== undefined) {
     if (field.min !== undefined && value < field.min) {
-      errors[field.key] = `值不能小于 ${field.min}`
+      errors[fieldKey] = `值不能小于 ${field.min}`
       return
     }
     if (field.max !== undefined && value > field.max) {
-      errors[field.key] = `值不能大于 ${field.max}`
+      errors[fieldKey] = `值不能大于 ${field.max}`
       return
     }
   }
@@ -283,7 +284,7 @@ const validateField = (field: FormField) => {
 const validateForm = () => {
   for (const row of props.fields) {
     for (const field of row) {
-      validateField(field)
+      validateField(field.key, props.form[field.key])
     }
   }
   return Object.keys(errors).length === 0
@@ -304,11 +305,39 @@ const resetForm = () => {
   emit('reset')
 }
 
-// 监听表单变化
+// 防抖函数
+const debounce = <T extends (...args: any[]) => void>(fn: T, delay: number): T => {
+  let timeoutId: ReturnType<typeof setTimeout>
+  return ((...args: Parameters<T>) => {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => fn(...args), delay)
+  }) as T
+}
+
+
+// 监听表单变化（优化性能）
 if (props.validateOnChange) {
-  watch(() => props.form, () => {
-    // 可以在这里添加实时验证逻辑
-  }, { deep: true })
+  // 使用防抖避免频繁验证
+  const debouncedValidate = debounce(() => {
+    // 只验证有验证器的字段
+    props.fields.flat().forEach(field => {
+      if (field.validator && field.key in props.form) {
+        validateField(field.key, props.form[field.key])
+      }
+    })
+  }, 300)
+
+  // 浅层监听每个字段变化，而不是深度监听整个表单
+  props.fields.flat().forEach(field => {
+    watch(
+      () => props.form[field.key],
+      (newValue) => {
+        validateField(field.key, newValue)
+        debouncedValidate()
+      },
+      { immediate: false }
+    )
+  })
 }
 </script>
 

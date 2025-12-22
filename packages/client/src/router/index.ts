@@ -21,74 +21,81 @@ const router = createRouter({
           component: () => import('@/views/Dashboard.vue')
         },
         {
-          path: 'users',
-          name: 'Users',
-          meta: { title: '用户管理', permission: 'user:list' },
+          path: 'system',
+          name: 'System',
+          meta: { title: '系统管理', permission: 'system:access' },
           children: [
             {
-              path: '',
-              name: 'UserList',
-              component: () => import('@/views/users/UserList.vue')
+              path: 'users',
+              name: 'Users',
+              meta: { title: '用户管理', permission: 'user:list' },
+              children: [
+                {
+                  path: '',
+                  name: 'UserList',
+                  component: () => import('@/views/users/UserList.vue')
+                },
+                {
+                  path: 'create',
+                  name: 'UserCreate',
+                  component: () => import('@/views/users/UserForm.vue'),
+                  meta: { title: '创建用户', permission: 'user:create' }
+                },
+                {
+                  path: ':id/edit',
+                  name: 'UserEdit',
+                  component: () => import('@/views/users/UserForm.vue'),
+                  meta: { title: '编辑用户', permission: 'user:update' }
+                }
+              ]
             },
             {
-              path: 'create',
-              name: 'UserCreate',
-              component: () => import('@/views/users/UserForm.vue'),
-              meta: { title: '创建用户', permission: 'user:create' }
+              path: 'roles',
+              name: 'Roles',
+              meta: { title: '角色管理', permission: 'role:list' },
+              children: [
+                {
+                  path: '',
+                  name: 'RoleList',
+                  component: () => import('@/views/roles/RoleList.vue')
+                },
+                {
+                  path: 'create',
+                  name: 'RoleCreate',
+                  component: () => import('@/views/roles/RoleForm.vue'),
+                  meta: { title: '创建角色', permission: 'role:create' }
+                },
+                {
+                  path: ':id/edit',
+                  name: 'RoleEdit',
+                  component: () => import('@/views/roles/RoleForm.vue'),
+                  meta: { title: '编辑角色', permission: 'role:update' }
+                }
+              ]
             },
             {
-              path: ':id/edit',
-              name: 'UserEdit',
-              component: () => import('@/views/users/UserForm.vue'),
-              meta: { title: '编辑用户', permission: 'user:update' }
-            }
-          ]
-        },
-        {
-          path: 'roles',
-          name: 'Roles',
-          meta: { title: '角色管理', permission: 'role:list' },
-          children: [
-            {
-              path: '',
-              name: 'RoleList',
-              component: () => import('@/views/roles/RoleList.vue')
-            },
-            {
-              path: 'create',
-              name: 'RoleCreate',
-              component: () => import('@/views/roles/RoleForm.vue'),
-              meta: { title: '创建角色', permission: 'role:create' }
-            },
-            {
-              path: ':id/edit',
-              name: 'RoleEdit',
-              component: () => import('@/views/roles/RoleForm.vue'),
-              meta: { title: '编辑角色', permission: 'role:update' }
-            }
-          ]
-        },
-        {
-          path: 'menus',
-          name: 'Menus',
-          meta: { title: '菜单管理', permission: 'menu:list' },
-          children: [
-            {
-              path: '',
-              name: 'MenuList',
-              component: () => import('@/views/menus/MenuList.vue')
-            },
-            {
-              path: 'create',
-              name: 'MenuCreate',
-              component: () => import('@/views/menus/MenuForm.vue'),
-              meta: { title: '创建菜单', permission: 'menu:create' }
-            },
-            {
-              path: ':id/edit',
-              name: 'MenuEdit',
-              component: () => import('@/views/menus/MenuForm.vue'),
-              meta: { title: '编辑菜单', permission: 'menu:update' }
+              path: 'menus',
+              name: 'Menus',
+              meta: { title: '菜单管理', permission: 'menu:list' },
+              children: [
+                {
+                  path: '',
+                  name: 'MenuList',
+                  component: () => import('@/views/menus/MenuList.vue')
+                },
+                {
+                  path: 'create',
+                  name: 'MenuCreate',
+                  component: () => import('@/views/menus/MenuForm.vue'),
+                  meta: { title: '创建菜单', permission: 'menu:create' }
+                },
+                {
+                  path: ':id/edit',
+                  name: 'MenuEdit',
+                  component: () => import('@/views/menus/MenuForm.vue'),
+                  meta: { title: '编辑菜单', permission: 'menu:update' }
+                }
+              ]
             }
           ]
         }

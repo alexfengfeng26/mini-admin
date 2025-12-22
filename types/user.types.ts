@@ -27,6 +27,7 @@ export interface CreateUserDto {
 
 // 更新用户DTO
 export interface UpdateUserDto {
+  username?: string;
   email?: string;
   password?: string;
   nickname?: string;
@@ -53,6 +54,6 @@ export interface UserListItem {
   avatar?: string;
   phone?: string;
   status: number;
-  roleNames: string;
+  roles: string;
   createdAt: string;
 }

@@ -2,40 +2,50 @@ import { BaseService } from './base.service';
 import { hashPassword } from '../utils/password';
 import { CreateUserDto, UpdateUserDto, UserQueryDto, UserListItem } from '@types/user.types';
 import { PaginatedResponse } from '@types/shared.types';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export class UserService extends BaseService<any, CreateUserDto, UpdateUserDto, UserQueryDto> {
   protected model = prisma.user;
   protected entityName = '用户';
 
   async create(data: CreateUserDto): Promise<any> {
-    // 检查用户名是否已存在
+    // 先验证唯一性约束（在事务外进行以提高性能）
     await this.validateUniqueConstraints(data, null);
 
     // 加密密码
     const hashedPassword = await hashPassword(data.password);
 
-    // 创建用户（不包含密码）
-    const user = await prisma.user.create({
-      data: {
-        username: data.username,
-        email: data.email,
-        password: hashedPassword,
-        nickname: data.nickname,
-        avatar: data.avatar,
-        phone: data.phone,
-        status: data.status ?? 1,
-      },
-    });
+    // 使用事务确保数据一致性
+    return await this.transaction(async (tx) => {
+      // 创建用户
+      const user = await tx.user.create({
+        data: {
+          username: data.username,
+          email: data.email,
+          password: hashedPassword,
+          nickname: data.nickname,
+          avatar: data.avatar,
+          phone: data.phone,
+          status: data.status ?? 1,
+        },
+      });
 
-    // 分配角色
-    if (data.roleIds && data.roleIds.length > 0) {
-      await this.assignRoles(user.id, data.roleIds);
-    }
+      // 分配角色
+      if (data.roleIds && data.roleIds.length > 0) {
+        await Promise.all(
+          data.roleIds.map(roleId =>
+            tx.userRole.create({
+              data: {
+                userId: user.id,
+                roleId: roleId,
+              },
+            })
+          )
+        );
+      }
 
-    return this.findById(user.id);
+      return user;
+    }).then(user => this.findById(user.id));
   }
 
   async findAll(query: UserQueryDto): Promise<PaginatedResponse<UserListItem>> {
@@ -68,8 +78,16 @@ export class UserService extends BaseService<any, CreateUserDto, UpdateUserDto, 
       where.status = status;
     }
 
-    // 如果按角色过滤，需要关联查询
-    const include: any = {
+    if (roleId) {
+      where.userRoles = {
+        some: {
+          roleId: roleId,
+        },
+      };
+    }
+
+    // 总是包含角色信息以便前端显示
+    const include = {
       userRoles: {
         include: {
           role: true,
@@ -100,7 +118,9 @@ export class UserService extends BaseService<any, CreateUserDto, UpdateUserDto, 
       status: user.status,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      roles: user.userRoles.map((ur: any) => ur.role.name).join(', '),
+      roleNames: user.userRoles && user.userRoles.length > 0
+        ? user.userRoles.map((ur: any) => ur.role.name).join(', ')
+        : '',
     }));
 
     return {
@@ -145,6 +165,7 @@ export class UserService extends BaseService<any, CreateUserDto, UpdateUserDto, 
 
     // 构建更新数据
     const updateData: any = {
+      username: data.username,
       nickname: data.nickname,
       avatar: data.avatar,
       phone: data.phone,
@@ -206,24 +227,33 @@ export class UserService extends BaseService<any, CreateUserDto, UpdateUserDto, 
   /**
    * 分配角色给用户
    */
-  async assignRoles(userId: number, roleIds: number[]): Promise<void> {
-    // 创建用户角色关联
-    await Promise.all(
-      roleIds.map((roleId) =>
-        prisma.userRole.create({
-          data: {
-            userId,
-            roleId,
-          },
-        })
-      )
-    );
+  async assignRoles(userId: number, roleIds: number[], tx?: any): Promise<void> {
+    const client = tx || prisma;
+
+    // 先删除现有的角色关联
+    await client.userRole.deleteMany({
+      where: { userId }
+    });
+
+    // 创建新的角色关联
+    if (roleIds.length > 0) {
+      await Promise.all(
+        roleIds.map((roleId) =>
+          client.userRole.create({
+            data: {
+              userId,
+              roleId,
+            },
+          })
+        )
+      );
+    }
   }
 
   /**
    * 验证唯一性约束
    */
-  private async validateUniqueConstraints(data: CreateUserDto, excludeId?: number): Promise<void> {
+  private async validateUniqueConstraints(data: CreateUserDto | UpdateUserDto, excludeId?: number): Promise<void> {
     // 检查用户名
     if (data.username) {
       const existingUser = await prisma.user.findFirst({

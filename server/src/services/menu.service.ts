@@ -1,9 +1,7 @@
 import { BaseService } from './base.service';
 import { CreateMenuDto, UpdateMenuDto, MenuQueryDto, MenuTreeNode } from '@types/menu.types';
 import { PaginatedResponse } from '@types/shared.types';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export class MenuService extends BaseService<any, CreateMenuDto, UpdateMenuDto, MenuQueryDto> {
   protected model = prisma.menu;

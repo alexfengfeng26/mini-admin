@@ -219,8 +219,14 @@ GET /api/health               # 系统健康检查
 - **菜单管理** (`/menus`) - 菜单树、结构编辑
 
 ### 布局组件
-- **主布局** (`MainLayout`) - 侧边栏、顶部导航
-- **权限控制** - 基于 JWT 的路由守卫
+- **主布局** (`MainLayout`) - 动态菜单侧边栏、顶部导航
+- **权限控制** - 基于 JWT 的路由守卫，动态权限过滤
+- **权限提示** (`PermissionDenied`) - 友好的权限不足提示界面
+
+### 权限优化组件
+- **动态菜单系统** - 基于用户权限实时显示可访问菜单
+- **权限错误处理** (`useErrorHandler`) - 统一的权限错误处理机制
+- **菜单API集成** - `/api/menus/user` 获取用户权限菜单树
 
 ### 重构后的组件架构
 - **BaseForm** (`@/components/BaseForm.vue`) - 通用表单组件，支持动态字段渲染和验证
@@ -261,9 +267,11 @@ GET /api/health               # 系统健康检查
 ```
 
 ### 权限控制
+- **动态菜单显示**: 根据用户权限实时过滤菜单项，无权限菜单不显示
 - **页面级权限**: 路由守卫验证用户访问权限
-- **API级权限**: 中间件验证接口调用权限
+- **API级权限**: 中间件验证接口调用权限，统一错误处理
 - **按钮级权限**: 基于权限标识控制按钮显示
+- **权限错误处理**: 友好的权限不足提示，避免403错误干扰
 
 ## 🛠️ 开发指南
 
@@ -482,11 +490,120 @@ lsof -ti:3000 | xargs kill -9
 - 检查用户是否已登录
 - 验证 Token 是否有效
 - 确认用户拥有对应权限
+- **优化后**: 无权限菜单不会显示，避免403错误
 
 ### Q4: 前端页面 404
 - 确保前端开发服务器正常运行
 - 检查路由配置是否正确
 - 验证文件路径是否存在
+
+## 🎯 权限系统优化
+
+### 优化概述
+基于用户体验优化的权限系统升级，实现了动态菜单显示和友好的权限错误处理，彻底解决403错误干扰问题。
+
+### 核心改进
+
+#### 1. 动态菜单系统
+```typescript
+// 获取用户权限菜单
+const response = await api.get('/menus/user')
+userMenus.value = response.data.data
+
+// 动态渲染有权限的菜单项
+<template v-for="menu in processedMenus">
+  <router-link v-if="menu.type === 1 && menu.path" :to="menu.path">
+    {{ getIconDisplay(menu.icon) }} {{ menu.name }}
+  </router-link>
+</template>
+```
+
+#### 2. 权限错误处理优化
+```typescript
+// API工具类增强
+export const isPermissionError = (error: any): boolean => {
+  return error?.response?.status === 403
+}
+
+// 组合函数
+const { isPermissionDenied, handleError } = useApiError()
+
+// 静默处理权限错误
+if (error?.response?.status === 403) {
+  console.warn('权限不足，不显示错误提示')
+  return
+}
+```
+
+#### 3. 路由结构优化
+```typescript
+// 匹配后端菜单路径结构
+{
+  path: 'system',
+  children: [
+    { path: 'users' },      // /system/users
+    { path: 'roles' },      // /system/roles
+    { path: 'menus' },      // /system/menus
+  ]
+}
+```
+
+### 用户体验提升
+
+#### 之前问题
+- ❌ 显示所有菜单，点击后才知道无权限
+- ❌ 控制台充满403错误信息
+- ❌ 用户困惑和无效的交互体验
+- ❌ 技术性错误弹窗干扰用户
+
+#### 优化后效果
+- ✅ 只显示有权限的菜单项
+- ✅ 完全消除403错误和错误弹窗
+- ✅ 用户直观了解可访问功能
+- ✅ 干净、专业的用户界面
+
+#### 受限用户示例
+```bash
+# API返回: {"success":true,"data":[]}
+# 前端显示: 只显示"仪表盘"菜单
+# 用户体验: 干净界面，无权限提示干扰
+```
+
+#### 管理员用户示例
+```bash
+# API返回: 完整的系统管理菜单树
+# 前端显示: 系统管理(⚙️) → 用户管理(👤)、角色管理(👥)、菜单管理(📋)
+# 用户体验: 完整功能访问
+```
+
+### 技术实现特性
+- **菜单树形结构**: 支持无限级菜单嵌套
+- **图标映射**: 后端图标字符串 → 前端Emoji显示
+- **类型安全**: 完整的TypeScript类型支持
+- **性能优化**: API返回即用，无需前端重构树形结构
+- **向后兼容**: 保留权限提示组件作为后备方案
+
+### 配置使用
+```vue
+<!-- MainLayout.vue -->
+<template>
+  <nav class="nav">
+    <!-- 动态权限菜单 -->
+    <template v-for="menu in processedMenus">
+      <router-link :to="menu.path" class="nav-item">
+        {{ getIconDisplay(menu.icon) }} {{ menu.name }}
+      </router-link>
+    </template>
+  </nav>
+</template>
+
+<script setup>
+const { isPermissionDenied, handleError } = useApiError()
+
+// 权限错误自动处理，用户无感知
+fetchUsers().catch(handleError)
+</script>
+```
 
 ## 📝 开发规范
 
@@ -574,6 +691,8 @@ npm start
 
 ---
 
-**🎉 项目已完全可用，所有功能正常运行！组件化重构完成！**
+**🎉 项目已完全可用，所有功能正常运行！组件化重构完成！权限系统优化完成！**
+
+**✨ 最新优化：动态菜单权限系统，彻底解决403错误问题！**
 
 > 如有任何问题，请查看常见问题部分或提交 Issue。

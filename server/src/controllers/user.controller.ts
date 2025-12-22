@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services/user.service';
 import { successResponse, errorResponse, paginatedResponse } from '../utils/response';
+import { validateInput, userValidationSchema } from '../middleware/validation';
 
 const userService = new UserService();
 

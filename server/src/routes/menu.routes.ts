@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { MenuController } from '../controllers/menu.controller';
 import { authenticate } from '../middleware/auth';
 import { requirePermission } from '../middleware/rbac';
+import { validateInput, menuValidationSchema } from '../middleware/validation';
 
 const router = Router();
 const menuController = new MenuController();
@@ -40,6 +41,7 @@ router.get(
 router.post(
   '/',
   requirePermission('menu:create'),
+  validateInput(menuValidationSchema),
   menuController.create
 );
 
@@ -47,6 +49,7 @@ router.post(
 router.put(
   '/:id',
   requirePermission('menu:update'),
+  validateInput(menuValidationSchema),
   menuController.update
 );
 

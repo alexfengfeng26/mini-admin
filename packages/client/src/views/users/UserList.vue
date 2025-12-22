@@ -1,111 +1,118 @@
 <template>
   <div class="user-list">
-    <div class="page-header">
-      <h1 class="page-title">用户管理</h1>
-      <router-link to="/users/create" class="btn btn-primary">
-        + 新增用户
-      </router-link>
-    </div>
+    <!-- 权限不足提示 -->
+    <PermissionDenied v-if="isPermissionDenied" requiredPermission="user:list" />
 
-    <div class="card">
-      <div class="card-body">
-        <div class="search-bar">
-          <input
-            v-model="searchForm.username"
-            type="text"
-            class="form-input"
-            placeholder="搜索用户名"
-          />
-          <input
-            v-model="searchForm.email"
-            type="text"
-            class="form-input"
-            placeholder="搜索邮箱"
-          />
-          <select v-model="searchForm.status" class="form-select">
-            <option value="">全部状态</option>
-            <option value="1">启用</option>
-            <option value="0">禁用</option>
-          </select>
-          <button class="btn btn-secondary" @click="handleSearch">搜索</button>
-          <button class="btn btn-secondary" @click="resetSearch">重置</button>
-        </div>
+    <template v-else>
+      <div class="page-header">
+        <h1 class="page-title">用户管理</h1>
+        <router-link to="/users/create" class="btn btn-primary">
+          + 新增用户
+        </router-link>
+      </div>
 
-        <table class="table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>用户名</th>
-              <th>邮箱</th>
-              <th>昵称</th>
-              <th>状态</th>
-              <th>角色</th>
-              <th>创建时间</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="user in users" :key="user.id">
-              <td>{{ user.id }}</td>
-              <td>{{ user.username }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.nickname || '-' }}</td>
-              <td>
-                <span
-                  :class="[
-                    'status-badge',
-                    user.status === 1 ? 'status-active' : 'status-inactive'
-                  ]"
-                >
-                  {{ user.status === 1 ? '启用' : '禁用' }}
-                </span>
-              </td>
-              <td>{{ user.roleNames }}</td>
-              <td>{{ formatDate(user.createdAt) }}</td>
-              <td>
-                <router-link
-                  :to="`/users/${user.id}/edit`"
-                  class="btn btn-secondary"
-                  style="margin-right: 8px;"
-                >
-                  编辑
-                </router-link>
-                <button class="btn btn-danger" @click="handleDelete(user.id)">
-                  删除
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="card">
+        <div class="card-body">
+          <div class="search-bar">
+            <input
+              v-model="searchForm.username"
+              type="text"
+              class="form-input"
+              placeholder="搜索用户名"
+            />
+            <input
+              v-model="searchForm.email"
+              type="text"
+              class="form-input"
+              placeholder="搜索邮箱"
+            />
+            <select v-model="searchForm.status" class="form-select">
+              <option value="">全部状态</option>
+              <option value="1">启用</option>
+              <option value="0">禁用</option>
+            </select>
+            <button class="btn btn-secondary" @click="handleSearch">搜索</button>
+            <button class="btn btn-secondary" @click="resetSearch">重置</button>
+          </div>
 
-        <div class="pagination">
-          <button
-            class="btn btn-secondary"
-            :disabled="pagination.page <= 1"
-            @click="handlePageChange(pagination.page - 1)"
-          >
-            上一页
-          </button>
-          <span class="pagination-info">
-            第 {{ pagination.page }} / {{ pagination.totalPages }} 页，共
-            {{ pagination.total }} 条
-          </span>
-          <button
-            class="btn btn-secondary"
-            :disabled="pagination.page >= pagination.totalPages"
-            @click="handlePageChange(pagination.page + 1)"
-          >
-            下一页
-          </button>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>用户名</th>
+                <th>邮箱</th>
+                <th>昵称</th>
+                <th>状态</th>
+                <th>角色</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="user in users" :key="user.id">
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.nickname || '-' }}</td>
+                <td>
+                  <span
+                    :class="[
+                      'status-badge',
+                      user.status === 1 ? 'status-active' : 'status-inactive'
+                    ]"
+                  >
+                    {{ user.status === 1 ? '启用' : '禁用' }}
+                  </span>
+                </td>
+                <td>{{ user.roleNames }}</td>
+                <td>{{ formatDate(user.createdAt) }}</td>
+                <td>
+                  <router-link
+                    :to="`/users/${user.id}/edit`"
+                    class="btn btn-secondary"
+                    style="margin-right: 8px;"
+                  >
+                    编辑
+                  </router-link>
+                  <button class="btn btn-danger" @click="handleDelete(user.id)">
+                    删除
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <button
+              class="btn btn-secondary"
+              :disabled="pagination.page <= 1"
+              @click="handlePageChange(pagination.page - 1)"
+            >
+              上一页
+            </button>
+            <span class="pagination-info">
+              第 {{ pagination.page }} / {{ pagination.totalPages }} 页，共
+              {{ pagination.total }} 条
+            </span>
+            <button
+              class="btn btn-secondary"
+              :disabled="pagination.page >= pagination.totalPages"
+              @click="handlePageChange(pagination.page + 1)"
+            >
+              下一页
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { api } from '@/utils/api'
+import PermissionDenied from '@/components/PermissionDenied.vue'
+import { useApiError } from '@/composables/useErrorHandler'
 import type { UserListItem, PaginatedResponse } from '@types'
 
 const users = ref<UserListItem[]>([])
@@ -122,6 +129,8 @@ const searchForm = ref({
   status: ''
 })
 
+const { isPermissionDenied, handleError } = useApiError()
+
 const fetchUsers = async () => {
   try {
     const params = {
@@ -137,8 +146,7 @@ const fetchUsers = async () => {
     users.value = response.data.data.items
     pagination.value = response.data.data
   } catch (error) {
-    console.error('获取用户列表失败:', error)
-    alert('获取用户列表失败')
+    handleError(error, '获取用户列表失败')
   }
 }
 

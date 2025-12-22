@@ -1,9 +1,7 @@
 import { BaseService } from './base.service';
 import { CreateRoleDto, UpdateRoleDto, RoleQueryDto } from '@types/role.types';
 import { PaginatedResponse } from '@types/shared.types';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export class RoleService extends BaseService<any, CreateRoleDto, UpdateRoleDto, RoleQueryDto> {
   protected model = prisma.role;

@@ -37,3 +37,13 @@ api.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+// 检查权限错误的工具函数
+export const isPermissionError = (error: any): boolean => {
+  return error?.response?.status === 403
+}
+
+// 获取权限错误信息的工具函数
+export const getPermissionErrorMessage = (error: any): string => {
+  return error?.response?.data?.message || '您没有访问此功能的权限'
+}

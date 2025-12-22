@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { PaginatedResponse } from '@types/shared.types';
-
-const prisma = new PrismaClient();
 
 export abstract class BaseService<
   T,

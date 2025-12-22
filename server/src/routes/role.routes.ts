@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { RoleController } from '../controllers/role.controller';
 import { authenticate } from '../middleware/auth';
 import { requirePermission } from '../middleware/rbac';
+import { validateInput, roleValidationSchema } from '../middleware/validation';
 
 const router = Router();
 const roleController = new RoleController();
@@ -27,6 +28,7 @@ router.get(
 router.post(
   '/',
   requirePermission('role:create'),
+  validateInput(roleValidationSchema),
   roleController.create
 );
 
@@ -34,6 +36,7 @@ router.post(
 router.put(
   '/:id',
   requirePermission('role:update'),
+  validateInput(roleValidationSchema),
   roleController.update
 );
 
