@@ -1,0 +1,98 @@
+### Page state
+- Page URL: http://localhost:5173/menus
+- Page Title: Mini Admin 后台管理系统
+- Page Snapshot:
+```yaml
+- generic [ref=e4]:
+  - complementary [ref=e5]:
+    - heading "Mini Admin" [level=2] [ref=e7]
+    - navigation [ref=e8]:
+      - link "仪表盘" [ref=e9] [cursor=pointer]:
+        - /url: /
+      - link "用户管理" [ref=e10] [cursor=pointer]:
+        - /url: /users
+      - link "角色管理" [ref=e11] [cursor=pointer]:
+        - /url: /roles
+      - link "菜单管理" [active] [ref=e12] [cursor=pointer]:
+        - /url: /menus
+  - generic [ref=e13]:
+    - banner [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]: admin
+        - button "登出" [ref=e17] [cursor=pointer]
+    - main [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - heading "菜单管理" [level=1] [ref=e21]
+          - link "+ 新增菜单" [ref=e22] [cursor=pointer]:
+            - /url: /menus/create
+        - table [ref=e25]:
+          - rowgroup [ref=e26]:
+            - row "ID 菜单名称 路径 类型 排序 状态 权限标识 创建时间 操作" [ref=e27]:
+              - columnheader "ID" [ref=e28]
+              - columnheader "菜单名称" [ref=e29]
+              - columnheader "路径" [ref=e30]
+              - columnheader "类型" [ref=e31]
+              - columnheader "排序" [ref=e32]
+              - columnheader "状态" [ref=e33]
+              - columnheader "权限标识" [ref=e34]
+              - columnheader "创建时间" [ref=e35]
+              - columnheader "操作" [ref=e36]
+          - rowgroup [ref=e37]:
+            - row "1 系统管理 /system 菜单 1 启用 - 2025/12/22 16:49:51 编辑 删除" [ref=e38]:
+              - cell "1" [ref=e39]
+              - cell "系统管理" [ref=e40]
+              - cell "/system" [ref=e41]
+              - cell "菜单" [ref=e42]
+              - cell "1" [ref=e43]
+              - cell "启用" [ref=e44]
+              - cell "-" [ref=e45]
+              - cell "2025/12/22 16:49:51" [ref=e46]
+              - cell "编辑 删除" [ref=e47]:
+                - link "编辑" [ref=e48] [cursor=pointer]:
+                  - /url: /menus/1/edit
+                - button "删除" [ref=e49] [cursor=pointer]
+            - row "2 ├─ 用户管理 /system/users 菜单 1 启用 user:list 2025/12/22 16:49:51 编辑 删除 3 ├─ 角色管理 /system/roles 菜单 2 启用 role:list 2025/12/22 16:49:51 编辑 删除 4 ├─ 菜单管理 /system/menus 菜单 3 启用 menu:list 2025/12/22 16:49:51 编辑 删除" [ref=e50]:
+              - cell "2 ├─ 用户管理 /system/users 菜单 1 启用 user:list 2025/12/22 16:49:51 编辑 删除 3 ├─ 角色管理 /system/roles 菜单 2 启用 role:list 2025/12/22 16:49:51 编辑 删除 4 ├─ 菜单管理 /system/menus 菜单 3 启用 menu:list 2025/12/22 16:49:51 编辑 删除" [ref=e51]:
+                - table [ref=e52]:
+                  - rowgroup [ref=e53]:
+                    - row "2 ├─ 用户管理 /system/users 菜单 1 启用 user:list 2025/12/22 16:49:51 编辑 删除" [ref=e54]:
+                      - cell "2" [ref=e55]
+                      - cell "├─ 用户管理" [ref=e56]
+                      - cell "/system/users" [ref=e57]
+                      - cell "菜单" [ref=e58]
+                      - cell "1" [ref=e59]
+                      - cell "启用" [ref=e60]
+                      - cell "user:list" [ref=e61]
+                      - cell "2025/12/22 16:49:51" [ref=e62]
+                      - cell "编辑 删除" [ref=e63]:
+                        - link "编辑" [ref=e64] [cursor=pointer]:
+                          - /url: /menus/2/edit
+                        - button "删除" [ref=e65] [cursor=pointer]
+                    - row "3 ├─ 角色管理 /system/roles 菜单 2 启用 role:list 2025/12/22 16:49:51 编辑 删除" [ref=e66]:
+                      - cell "3" [ref=e67]
+                      - cell "├─ 角色管理" [ref=e68]
+                      - cell "/system/roles" [ref=e69]
+                      - cell "菜单" [ref=e70]
+                      - cell "2" [ref=e71]
+                      - cell "启用" [ref=e72]
+                      - cell "role:list" [ref=e73]
+                      - cell "2025/12/22 16:49:51" [ref=e74]
+                      - cell "编辑 删除" [ref=e75]:
+                        - link "编辑" [ref=e76] [cursor=pointer]:
+                          - /url: /menus/3/edit
+                        - button "删除" [ref=e77] [cursor=pointer]
+                    - row "4 ├─ 菜单管理 /system/menus 菜单 3 启用 menu:list 2025/12/22 16:49:51 编辑 删除" [ref=e78]:
+                      - cell "4" [ref=e79]
+                      - cell "├─ 菜单管理" [ref=e80]
+                      - cell "/system/menus" [ref=e81]
+                      - cell "菜单" [ref=e82]
+                      - cell "3" [ref=e83]
+                      - cell "启用" [ref=e84]
+                      - cell "menu:list" [ref=e85]
+                      - cell "2025/12/22 16:49:51" [ref=e86]
+                      - cell "编辑 删除" [ref=e87]:
+                        - link "编辑" [ref=e88] [cursor=pointer]:
+                          - /url: /menus/4/edit
+                        - button "删除" [ref=e89] [cursor=pointer]
+```

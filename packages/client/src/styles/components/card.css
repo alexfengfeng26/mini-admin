@@ -1,0 +1,134 @@
+/* 组件样式 - 卡片组件 */
+.card {
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--transition-duration-base) var(--transition-timing-ease);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.card-header {
+  padding: var(--spacing-4) var(--spacing-6);
+  border-bottom: 1px solid var(--color-border-light);
+  background-color: var(--color-bg-secondary);
+}
+
+.card-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.card-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: var(--spacing-1) 0 0 0;
+}
+
+.card-actions {
+  display: flex;
+  gap: var(--spacing-2);
+  align-items: center;
+}
+
+.card-body {
+  padding: var(--spacing-6);
+}
+
+.card-footer {
+  padding: var(--spacing-4) var(--spacing-6);
+  border-top: 1px solid var(--color-border-light);
+  background-color: var(--color-bg-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 卡片尺寸变体 */
+.card-sm .card-header,
+.card-sm .card-footer {
+  padding: var(--spacing-2) var(--spacing-4);
+}
+
+.card-sm .card-body {
+  padding: var(--spacing-4);
+}
+
+.card-lg .card-header,
+.card-lg .card-footer {
+  padding: var(--spacing-6) var(--spacing-8);
+}
+
+.card-lg .card-body {
+  padding: var(--spacing-8);
+}
+
+/* 卡片状态变体 */
+.card-bordered {
+  border: 2px solid var(--color-border-base);
+}
+
+.card-shadow {
+  box-shadow: var(--shadow-md);
+}
+
+.card-shadow:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.card-interactive {
+  cursor: pointer;
+  transition: all var(--transition-duration-base) var(--transition-timing-ease);
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-interactive:active {
+  transform: translateY(0);
+}
+
+/* 卡片颜色变体 */
+.card-primary {
+  border-color: var(--color-primary-200);
+}
+
+.card-primary .card-header {
+  background-color: var(--color-primary-50);
+  border-bottom-color: var(--color-primary-200);
+}
+
+.card-success {
+  border-color: var(--color-success-200);
+}
+
+.card-success .card-header {
+  background-color: var(--color-success-50);
+  border-bottom-color: var(--color-success-200);
+}
+
+.card-warning {
+  border-color: var(--color-warning-200);
+}
+
+.card-warning .card-header {
+  background-color: var(--color-warning-50);
+  border-bottom-color: var(--color-warning-200);
+}
+
+.card-error {
+  border-color: var(--color-error-200);
+}
+
+.card-error .card-header {
+  background-color: var(--color-error-50);
+  border-bottom-color: var(--color-error-200);
+}

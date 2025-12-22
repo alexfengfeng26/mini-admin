@@ -228,12 +228,21 @@ GET /api/health               # 系统健康检查
 - **BaseModal** (`@/components/BaseModal.vue`) - 可复用模态框组件
 - **ConfirmDialog** (`@/components/ConfirmDialog.vue`) - 确认对话框组件
 
+### 组件化样式系统
+- **设计令牌** (`@/styles/tokens/`) - 颜色、字体、间距等设计变量
+- **基础样式** (`@/styles/base/`) - 重置样式和元素样式
+- **组件样式** (`@/styles/components/`) - 可复用组件的专用样式
+- **布局样式** (`@/styles/layout/`) - Flexbox、Grid 等布局工具
+- **工具类** (`@/styles/utilities/`) - 原子化的 CSS 工具类
+
 ### 组件化特性
 - **配置驱动**: 通过配置对象生成表单字段，减少重复代码
 - **类型安全**: 完整的 TypeScript 类型定义和验证
 - **动态渲染**: 支持多种字段类型（text、email、password、number、textarea、select、checkbox等）
 - **验证系统**: 内置验证机制，支持自定义验证器
 - **响应式设计**: 完全响应式的布局和交互
+- **设计系统**: 统一的设计语言和视觉一致性
+- **原子化CSS**: 高度可复用的工具类，快速构建界面
 
 ## 🔒 权限系统
 
@@ -380,6 +389,49 @@ const formFields = computed(() => [
 </script>
 ```
 
+#### 3. 使用组件化样式系统
+```vue
+<template>
+  <div class="page-container">
+    <div class="page-header">
+      <h1 class="page-title">页面标题</h1>
+      <p class="page-description">页面描述信息</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">卡片标题</h2>
+        <div class="card-actions">
+          <button class="btn btn-primary">主要按钮</button>
+          <button class="btn btn-secondary">次要按钮</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label required">输入框</label>
+            <input class="form-input" placeholder="请输入内容" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">选择框</label>
+            <select class="form-select">
+              <option>选项1</option>
+              <option>选项2</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+#### 4. 样式系统架构
+- **设计令牌**: 使用 CSS 变量定义颜色、字体、间距
+- **组件样式**: 每个组件都有独立的样式文件
+- **工具类**: 原子化的 CSS 类，快速构建布局
+- **响应式**: 内置响应式断点和工具类
+
 #### 2. API 调用
 ```typescript
 // 使用封装的 api 客户端
@@ -499,6 +551,12 @@ npm start
 - **表单配置**: 通过配置对象动态生成表单字段
 - **验证系统**: 内置验证机制，支持自定义验证器
 - **响应式设计**: 完全适配移动端的用户界面
+
+#### 4. 组件化样式系统
+- **设计令牌**: 颜色、字体、间距等变量的统一管理
+- **原子化CSS**: 高度可复用的工具类，快速构建界面
+- **组件样式**: 独立的组件样式文件，提高可维护性
+- **响应式布局**: 内置 Flexbox、Grid 等现代布局工具
 
 ### 技术特性
 - **SOLID原则**: 遵循单一职责、开闭原则等设计原则

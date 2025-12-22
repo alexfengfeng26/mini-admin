@@ -1,0 +1,6 @@
+/* 组件样式 - 索引文件 */
+@import url('./button.css');
+@import url('./form.css');
+@import url('./card.css');
+@import url('./table.css');
+@import url('./modal.css');
