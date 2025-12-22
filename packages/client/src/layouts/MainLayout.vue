@@ -84,6 +84,8 @@ const handleLogout = async () => {
   color: rgba(255, 255, 255, 0.65);
   text-decoration: none;
   transition: all 0.3s;
+  border: none;
+  outline: none;
 }
 
 .nav-item:hover {
@@ -94,6 +96,13 @@ const handleLogout = async () => {
 .nav-item.router-link-active {
   background: #1890ff;
   color: white;
+  border: none;
+  outline: none;
+}
+
+.nav-item:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .main-content {

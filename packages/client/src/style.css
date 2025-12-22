@@ -142,6 +142,32 @@
   border: 0;
 }
 
+/* 移除所有链接的默认轮廓和边框 */
+a {
+  outline: none;
+}
+
+a:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+button {
+  outline: none;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* 保留焦点可见性的样式 */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
 .focus-ring:focus {
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
