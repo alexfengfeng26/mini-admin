@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique @map("username")
+  email     String   @unique @map("email")
+  password  String   @map("password")
+  status    Int      @default(1) @map("status") // 0:禁用 1:启用
+  avatar    String?  @map("avatar")
+  phone     String?  @map("phone")
+  nickname  String?  @map("nickname")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  userRoles UserRole[]
+
+  @@map("users")
+}
+
+// 角色表
+model Role {
+  id          Int       @id @default(autoincrement())
+  name        String    @map("name")
+  code        String    @unique @map("code")
+  description String?   @map("description")
+  status      Int       @default(1) @map("status") // 0:禁用 1:启用
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // 关联关系
+  userRoles UserRole[]
+  roleMenus RoleMenu[]
+
+  @@map("roles")
+}
+
+// 菜单表
+model Menu {
+  id          Int       @id @default(autoincrement())
+  name        String    @map("name")
+  path        String?   @map("path")
+  component   String?   @map("component")
+  icon        String?   @map("icon")
+  sort        Int       @default(0) @map("sort")
+  parentId    Int?      @map("parent_id")
+  status      Int       @default(1) @map("status") // 0:禁用 1:启用
+  type        Int       @default(1) @map("type") // 1:菜单 2:按钮
+  permission  String?   @map("permission") // 按钮权限标识
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // 关联关系
+  parent        Menu?        @relation("MenuToMenu", fields: [parentId], references: [id])
+  children      Menu[]       @relation("MenuToMenu")
+  roleMenus     RoleMenu[]
+
+  @@map("menus")
+  @@index([parentId])
+}
+
+// 用户-角色关联表
+model UserRole {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  roleId    Int      @map("role_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@map("user_roles")
+}
+
+// 角色-菜单关联表
+model RoleMenu {
+  id        Int      @id @default(autoincrement())
+  roleId    Int      @map("role_id")
+  menuId    Int      @map("menu_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  menu Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, menuId])
+  @@map("role_menus")
+}

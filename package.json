@@ -1,0 +1,23 @@
+{
+  "name": "mini-admin",
+  "version": "1.0.0",
+  "description": "Mini Admin后台管理系统",
+  "private": true,
+  "workspaces": [
+    "server",
+    "packages/client"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm run dev --workspace=server",
+    "dev:client": "npm run dev --workspace=packages/client",
+    "build": "npm run build --workspace=server && npm run build --workspace=packages/client",
+    "install:all": "npm install && npm install --workspace=server && npm install --workspace=packages/client"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
