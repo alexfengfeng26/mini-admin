@@ -21,6 +21,121 @@ const router = createRouter({
           component: () => import('@/views/Dashboard.vue')
         },
         {
+          path: 'cms',
+          name: 'CMS',
+          meta: { title: '内容管理', permission: 'cms:access' },
+          children: [
+            {
+              path: 'articles',
+              name: 'Articles',
+              meta: { title: '文章管理', permission: 'article:list' },
+              children: [
+                {
+                  path: '',
+                  name: 'ArticleList',
+                  component: () => import('@/views/articles/ArticleList.vue')
+                },
+                {
+                  path: 'create',
+                  name: 'ArticleCreate',
+                  component: () => import('@/views/articles/ArticleForm.vue'),
+                  meta: { title: '新增文章', permission: 'article:create' }
+                },
+                {
+                  path: ':id/edit',
+                  name: 'ArticleEdit',
+                  component: () => import('@/views/articles/ArticleForm.vue'),
+                  meta: { title: '编辑文章', permission: 'article:update' }
+                }
+              ]
+            },
+            {
+              path: 'pages',
+              name: 'Pages',
+              meta: { title: '页面管理', permission: 'page:list' },
+              children: [
+                {
+                  path: '',
+                  name: 'PageList',
+                  component: () => import('@/views/pages/PageList.vue')
+                },
+                {
+                  path: 'create',
+                  name: 'PageCreate',
+                  component: () => import('@/views/pages/PageForm.vue'),
+                  meta: { title: '新增页面', permission: 'page:create' }
+                },
+                {
+                  path: ':id/edit',
+                  name: 'PageEdit',
+                  component: () => import('@/views/pages/PageForm.vue'),
+                  meta: { title: '编辑页面', permission: 'page:update' }
+                }
+              ]
+            },
+            {
+              path: 'products',
+              name: 'Products',
+              meta: { title: '产品管理', permission: 'product:list' },
+              children: [
+                {
+                  path: '',
+                  name: 'ProductList',
+                  component: () => import('@/views/products/ProductList.vue')
+                },
+                {
+                  path: 'create',
+                  name: 'ProductCreate',
+                  component: () => import('@/views/products/ProductForm.vue'),
+                  meta: { title: '新增产品', permission: 'product:create' }
+                },
+                {
+                  path: ':id/edit',
+                  name: 'ProductEdit',
+                  component: () => import('@/views/products/ProductForm.vue'),
+                  meta: { title: '编辑产品', permission: 'product:update' }
+                }
+              ]
+            },
+            {
+              path: 'documents',
+              name: 'Documents',
+              meta: { title: '文档管理', permission: 'document:list' },
+              children: [
+                {
+                  path: '',
+                  name: 'DocumentList',
+                  component: () => import('@/views/documents/DocumentList.vue')
+                },
+                {
+                  path: 'create',
+                  name: 'DocumentCreate',
+                  component: () => import('@/views/documents/DocumentForm.vue'),
+                  meta: { title: '新增文档', permission: 'document:create' }
+                },
+                {
+                  path: ':id/edit',
+                  name: 'DocumentEdit',
+                  component: () => import('@/views/documents/DocumentForm.vue'),
+                  meta: { title: '编辑文档', permission: 'document:update' }
+                }
+              ]
+            },
+            {
+              path: 'categories',
+              name: 'Categories',
+              meta: { title: '分类管理', permission: 'category:list' },
+              component: () => import('@/views/categories/CategoryManage.vue')
+            },
+            {
+              path: 'tags',
+              name: 'Tags',
+              meta: { title: '标签管理', permission: 'tag:list' },
+              component: () => import('@/views/tags/TagManage.vue')
+            }
+          ]
+        },
+        {
           path: 'system',
           name: 'System',
           meta: { title: '系统管理', permission: 'system:access' },

@@ -22,6 +22,7 @@ model User {
 
   // 关联关系
   userRoles UserRole[]
+  articles  Article[]
 
   @@map("users")
 }
@@ -65,6 +66,7 @@ model Menu {
 
   @@map("menus")
   @@index([parentId])
+  @@unique([path])
 }
 
 // 用户-角色关联表
@@ -95,4 +97,261 @@ model RoleMenu {
 
   @@unique([roleId, menuId])
   @@map("role_menus")
+}
+
+// ==================== CMS 内容管理系统 ====================
+
+// 分类表（多态：文章、页面、产品、文档共用）
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @map("name")
+  slug        String    @db.VarChar(100) @map("slug")
+  type        String    @db.VarChar(20) @map("type") // article, page, product, document
+  description String?   @map("description")
+  parentId    Int?      @map("parent_id")
+  sort        Int       @default(0) @map("sort")
+  status      Int       @default(1) @map("status") // 0:禁用 1:启用
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // 关联关系
+  parent   Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryToCategory")
+  articles Article[]
+  pages    Page[]
+  products Product[]
+  documents Document[]
+
+  @@unique([type, slug])
+  @@map("categories")
+  @@index([parentId])
+  @@index([type])
+}
+
+// 标签表（多态：文章、页面、产品、文档共用）
+model Tag {
+  id        Int       @id @default(autoincrement())
+  name      String    @map("name")
+  slug      String    @db.VarChar(100) @map("slug")
+  type      String    @db.VarChar(20) @map("type") // article, page, product, document
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // 关联关系
+  articleTags ArticleTag[]
+  pageTags    PageTag[]
+  productTags ProductTag[]
+  documentTags DocumentTag[]
+
+  @@unique([type, slug])
+  @@map("tags")
+  @@index([type])
+}
+
+// 文章表
+model Article {
+  id          Int       @id @default(autoincrement())
+  title       String    @map("title")
+  slug        String    @map("slug")
+  excerpt     String?   @map("excerpt")
+  content     String    @db.Text @map("content")
+  coverImage  String?   @map("cover_image")
+  categoryId  Int?      @map("category_id")
+  status      Int       @default(1) @map("status") // 0:草稿 1:已发布 2:已下架
+  featured    Boolean   @default(false) @map("featured") // 是否推荐
+  viewCount   Int       @default(0) @map("view_count")
+  likeCount   Int       @default(0) @map("like_count")
+  commentCount Int      @default(0) @map("comment_count")
+  authorId    Int       @map("author_id")
+  publishedAt DateTime? @map("published_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // SEO 字段
+  seoTitle       String? @map("seo_title")
+  seoDescription String? @map("seo_description")
+  seoKeywords    String? @map("seo_keywords")
+
+  // 扩展字段（JSON格式）
+  metadata Json? @map("metadata")
+
+  // 关联关系
+  category Category?    @relation(fields: [categoryId], references: [id])
+  author   User         @relation(fields: [authorId], references: [id])
+  tags     ArticleTag[]
+
+  @@map("articles")
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([status])
+  @@index([slug])
+  @@index([publishedAt])
+}
+
+// 文章-标签关联表
+model ArticleTag {
+  id        Int      @id @default(autoincrement())
+  articleId Int      @map("article_id")
+  tagId     Int      @map("tag_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, tagId])
+  @@map("article_tags")
+  @@index([articleId])
+  @@index([tagId])
+}
+
+// 页面表
+model Page {
+  id          Int       @id @default(autoincrement())
+  title       String    @map("title")
+  slug        String    @map("slug")
+  content     String    @db.Text @map("content")
+  template    String?   @map("template") // 页面模板
+  categoryId  Int?      @map("category_id")
+  status      Int       @default(1) @map("status") // 0:草稿 1:已发布 2:已下架
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // SEO 字段
+  seoTitle       String? @map("seo_title")
+  seoDescription String? @map("seo_description")
+  seoKeywords    String? @map("seo_keywords")
+
+  // 扩展字段（JSON格式）
+  metadata Json? @map("metadata")
+
+  // 关联关系
+  category Category?  @relation(fields: [categoryId], references: [id])
+  tags     PageTag[]
+
+  @@map("pages")
+  @@index([categoryId])
+  @@index([status])
+  @@index([slug])
+}
+
+// 页面-标签关联表
+model PageTag {
+  id        Int      @id @default(autoincrement())
+  pageId    Int      @map("page_id")
+  tagId     Int      @map("tag_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  page Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, tagId])
+  @@map("page_tags")
+  @@index([pageId])
+  @@index([tagId])
+}
+
+// 产品表
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String    @map("name")
+  code        String    @unique @map("code") // 产品编码
+  slug        String    @map("slug")
+  description String?   @map("description")
+  price       Decimal?  @map("price") @db.Decimal(10, 2)
+  stock       Int       @default(0) @map("stock")
+  categoryId  Int?      @map("category_id")
+  images      String?   @map("images") // JSON数组存储图片URL
+  status      Int       @default(1) @map("status") // 0:下架 1:上架 2:缺货
+  viewCount   Int       @default(0) @map("view_count")
+  salesCount  Int       @default(0) @map("sales_count")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // SEO 字段
+  seoTitle       String? @map("seo_title")
+  seoDescription String? @map("seo_description")
+  seoKeywords    String? @map("seo_keywords")
+
+  // 扩展字段（JSON格式）
+  metadata Json? @map("metadata")
+
+  // 关联关系
+  category Category?     @relation(fields: [categoryId], references: [id])
+  tags     ProductTag[]
+
+  @@map("products")
+  @@index([categoryId])
+  @@index([status])
+  @@index([slug])
+  @@index([code])
+}
+
+// 产品-标签关联表
+model ProductTag {
+  id        Int      @id @default(autoincrement())
+  productId Int      @map("product_id")
+  tagId     Int      @map("tag_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tag     Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, tagId])
+  @@map("product_tags")
+  @@index([productId])
+  @@index([tagId])
+}
+
+// 文档表
+model Document {
+  id          Int       @id @default(autoincrement())
+  title       String    @map("title")
+  slug        String    @map("slug")
+  content     String    @db.Text @map("content")
+  version     String    @map("version") // 文档版本
+  categoryId  Int?      @map("category_id")
+  fileUrl     String?   @map("file_url") // 附件URL
+  fileSize    Int?      @map("file_size") // 文件大小（字节）
+  downloadCount Int     @default(0) @map("download_count")
+  viewCount   Int       @default(0) @map("view_count")
+  status      Int       @default(1) @map("status") // 0:草稿 1:已发布 2:已下架
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // SEO 字段
+  seoTitle       String? @map("seo_title")
+  seoDescription String? @map("seo_description")
+  seoKeywords    String? @map("seo_keywords")
+
+  // 扩展字段（JSON格式）
+  metadata Json? @map("metadata")
+
+  // 关联关系
+  category Category?     @relation(fields: [categoryId], references: [id])
+  tags     DocumentTag[]
+
+  @@map("documents")
+  @@index([categoryId])
+  @@index([status])
+  @@index([slug])
+}
+
+// 文档-标签关联表
+model DocumentTag {
+  id         Int      @id @default(autoincrement())
+  documentId Int      @map("document_id")
+  tagId      Int      @map("tag_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  tag      Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, tagId])
+  @@map("document_tags")
+  @@index([documentId])
+  @@index([tagId])
 }
