@@ -9,7 +9,7 @@
         <div class="form-group"><label>描述</label><textarea v-model="form.description" class="form-textarea" rows="5"></textarea></div>
         <div class="form-group"><label>图片URLs（逗号分隔）</label><input v-model="imagesInput" class="form-input" placeholder="http://..." /></div>
         <div class="form-group"><label>标签</label><input v-model="tagInput" class="form-input" placeholder="标签,逗号分隔" @blur="handleTags" /></div>
-        <div class="form-actions"><button type="submit" class="btn btn-primary">{{isEdit?'更新':'创建'}}</button><button type="button" class="btn btn-secondary" @click="$router.push('/products')">取消</button></div>
+        <div class="form-actions"><button type="submit" class="btn btn-primary">{{isEdit?'更新':'创建'}}</button><button type="button" class="btn btn-secondary" @click="$router.push('/cms/products')">取消</button></div>
       </form>
     </div></div>
   </div>
@@ -23,7 +23,7 @@ const route=useRoute(),router=useRouter(),isEdit=computed(()=>!!route.params.id)
 const form=ref({name:'',code:'',slug:'',description:'',price:undefined,stock:0,categoryId:undefined,status:1,images:[] as string[],tagNames:[]})
 const imagesInput=ref(''),tagInput=ref(''),categories=ref([])
 const handleTags=()=>{if(!tagInput.value)return;form.value.tagNames=[...new Set([...form.value.tagNames,...tagInput.value.split(',').map(t=>t.trim()).filter(t=>t)])];tagInput.value=''}
-const handleSubmit=async()=>{try{if(imagesInput.value)form.value.images=imagesInput.value.split(',').map(s=>s.trim());isEdit.value?await api.put(`/products/${route.params.id}`,form.value):await api.post('/products',form.value);alert('成功');router.push('/products')}catch(e:any){alert(e.response?.data?.message||'失败')}}
+const handleSubmit=async()=>{try{if(imagesInput.value)form.value.images=imagesInput.value.split(',').map(s=>s.trim());isEdit.value?await api.put(`/products/${route.params.id}`,form.value):await api.post('/products',form.value);alert('成功');router.push('/cms/products')}catch(e:any){alert(e.response?.data?.message||'失败')}}
 onMounted(async()=>{const c=await api.get('/categories',{params:{type:'product',pageSize:100}});categories.value=c.data.data.items;if(isEdit.value){const p=await api.get(`/products/${route.params.id}`);Object.assign(form.value,p.data.data);if(p.data.data.images)imagesInput.value=p.data.data.images.join(',')}})
 </script>
 

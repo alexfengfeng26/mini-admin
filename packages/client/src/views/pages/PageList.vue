@@ -5,7 +5,7 @@
     <template v-else>
       <div class="page-header">
         <h1 class="page-title">页面管理</h1>
-        <router-link to="/pages/create" class="btn btn-primary">+ 新增页面</router-link>
+        <router-link to="/cms/pages/create" class="btn btn-primary">+ 新增页面</router-link>
       </div>
 
       <div class="card">
@@ -47,7 +47,7 @@
                 </td>
                 <td>{{ formatDate(page.createdAt) }}</td>
                 <td>
-                  <router-link :to="`/pages/${page.id}/edit`" class="btn btn-secondary" style="margin-right: 8px;">编辑</router-link>
+                  <router-link :to="`/cms/pages/${page.id}/edit`" class="btn btn-secondary" style="margin-right: 8px;">编辑</router-link>
                   <button class="btn btn-danger" @click="handleDelete(page.id)">删除</button>
                 </td>
               </tr>

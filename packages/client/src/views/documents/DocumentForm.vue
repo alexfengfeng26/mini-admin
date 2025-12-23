@@ -9,7 +9,7 @@
         <div class="form-group"><label>文件URL</label><input v-model="form.fileUrl" class="form-input" placeholder="http://..." /></div>
         <div class="form-group"><label>内容 <span class="required">*</span></label><textarea v-model="form.content" class="form-textarea" rows="12" required></textarea></div>
         <div class="form-group"><label>标签</label><input v-model="tagInput" class="form-input" placeholder="标签,逗号分隔" @blur="handleTags" /></div>
-        <div class="form-actions"><button type="submit" class="btn btn-primary">{{isEdit?'更新':'创建'}}</button><button type="button" class="btn btn-secondary" @click="$router.push('/documents')">取消</button></div>
+        <div class="form-actions"><button type="submit" class="btn btn-primary">{{isEdit?'更新':'创建'}}</button><button type="button" class="btn btn-secondary" @click="$router.push('/cms/documents')">取消</button></div>
       </form>
     </div></div>
   </div>
@@ -23,7 +23,7 @@ const route=useRoute(),router=useRouter(),isEdit=computed(()=>!!route.params.id)
 const form=ref({title:'',slug:'',content:'',version:'',categoryId:undefined,fileUrl:'',fileSize:undefined,status:0,tagNames:[]})
 const tagInput=ref(''),categories=ref([])
 const handleTags=()=>{if(!tagInput.value)return;form.value.tagNames=[...new Set([...form.value.tagNames,...tagInput.value.split(',').map(t=>t.trim()).filter(t=>t)])];tagInput.value=''}
-const handleSubmit=async()=>{try{isEdit.value?await api.put(`/documents/${route.params.id}`,form.value):await api.post('/documents',form.value);alert('成功');router.push('/documents')}catch(e:any){alert(e.response?.data?.message||'失败')}}
+const handleSubmit=async()=>{try{isEdit.value?await api.put(`/documents/${route.params.id}`,form.value):await api.post('/documents',form.value);alert('成功');router.push('/cms/documents')}catch(e:any){alert(e.response?.data?.message||'失败')}}
 onMounted(async()=>{const c=await api.get('/categories',{params:{type:'document',pageSize:100}});categories.value=c.data.data.items;if(isEdit.value){const d=await api.get(`/documents/${route.params.id}`);Object.assign(form.value,d.data.data)}})
 </script>
 

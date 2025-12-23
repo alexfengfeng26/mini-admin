@@ -6,7 +6,7 @@
     <template v-else>
       <div class="page-header">
         <h1 class="page-title">文章管理</h1>
-        <router-link to="/articles/create" class="btn btn-primary">
+        <router-link to="/cms/articles/create" class="btn btn-primary">
           + 新增文章
         </router-link>
       </div>
@@ -77,7 +77,7 @@
                 <td>{{ formatDate(article.publishedAt) }}</td>
                 <td>
                   <router-link
-                    :to="`/articles/${article.id}/edit`"
+                    :to="`/cms/articles/${article.id}/edit`"
                     class="btn btn-secondary"
                     style="margin-right: 8px;"
                   >

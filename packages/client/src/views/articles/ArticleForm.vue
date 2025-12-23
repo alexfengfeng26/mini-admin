@@ -255,7 +255,7 @@ const handleSubmit = async () => {
       await api.post('/articles', form.value)
       alert('创建成功')
     }
-    router.push('/articles')
+    router.push('/cms/articles')
   } catch (error: any) {
     console.error('提交失败:', error)
     alert(error.response?.data?.message || '提交失败')
@@ -263,7 +263,7 @@ const handleSubmit = async () => {
 }
 
 const handleCancel = () => {
-  router.push('/articles')
+  router.push('/cms/articles')
 }
 
 onMounted(async () => {

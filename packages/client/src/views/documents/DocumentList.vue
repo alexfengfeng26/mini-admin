@@ -1,9 +1,9 @@
 <template>
   <div class="document-list">
-    <div class="page-header"><h1 class="page-title">文档管理</h1><router-link to="/documents/create" class="btn btn-primary">+ 新增文档</router-link></div>
+    <div class="page-header"><h1 class="page-title">文档管理</h1><router-link to="/cms/documents/create" class="btn btn-primary">+ 新增文档</router-link></div>
     <div class="card"><div class="card-body">
       <div class="search-bar"><input v-model="searchForm.keyword" placeholder="搜索标题" class="form-input" /><button class="btn btn-secondary" @click="fetch">搜索</button></div>
-      <table class="table"><thead><tr><th>ID</th><th>标题</th><th>版本</th><th>下载</th><th>浏览</th><th>状态</th><th>操作</th></tr></thead><tbody><tr v-for="d in documents" :key="d.id"><td>{{d.id}}</td><td>{{d.title}}</td><td>{{d.version}}</td><td>{{d.downloadCount}}</td><td>{{d.viewCount}}</td><td><span :class="['badge',d.status===1?'badge-success':'badge-secondary']">{{d.status===1?'已发布':'草稿'}}</span></td><td><router-link :to="`/documents/${d.id}/edit`" class="btn btn-secondary">编辑</router-link><button class="btn btn-danger" @click="handleDelete(d.id)">删除</button></td></tr></tbody></table>
+      <table class="table"><thead><tr><th>ID</th><th>标题</th><th>版本</th><th>下载</th><th>浏览</th><th>状态</th><th>操作</th></tr></thead><tbody><tr v-for="d in documents" :key="d.id"><td>{{d.id}}</td><td>{{d.title}}</td><td>{{d.version}}</td><td>{{d.downloadCount}}</td><td>{{d.viewCount}}</td><td><span :class="['badge',d.status===1?'badge-success':'badge-secondary']">{{d.status===1?'已发布':'草稿'}}</span></td><td><router-link :to="`/cms/documents/${d.id}/edit`" class="btn btn-secondary">编辑</router-link><button class="btn btn-danger" @click="handleDelete(d.id)">删除</button></td></tr></tbody></table>
       <div class="pagination"><button :disabled="pagination.page<=1" @click="pagination.page--">上一页</button><span>第{{pagination.page}}页</span><button :disabled="pagination.page>=pagination.totalPages" @click="pagination.page++">下一页</button></div>
     </div></div>
   </div>

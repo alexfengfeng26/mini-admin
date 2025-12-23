@@ -11,7 +11,7 @@
         <div class="form-group"><label class="form-label">分类</label><select v-model="form.categoryId" class="form-select"><option value="">请选择</option><option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option></select></div>
         <div class="form-group"><label class="form-label">内容 <span class="required">*</span></label><textarea v-model="form.content" class="form-textarea" rows="15" required></textarea></div>
         <div class="form-group"><label class="form-label">标签</label><input v-model="tagInput" type="text" class="form-input" placeholder="输入标签，用逗号分隔" @blur="handleTagInput" /><div v-if="form.tagNames?.length" class="tag-list"><span v-for="(tag,i) in form.tagNames" :key="i" class="tag-badge">{{ tag }}<button type="button" @click="removeTag(i)" class="tag-close">×</button></span></div></div>
-        <div class="form-actions"><button type="submit" class="btn btn-primary">{{ isEdit ? '更新' : '创建' }}</button><button type="button" class="btn btn-secondary" @click="$router.push('/pages')">取消</button></div>
+        <div class="form-actions"><button type="submit" class="btn btn-primary">{{ isEdit ? '更新' : '创建' }}</button><button type="button" class="btn btn-secondary" @click="$router.push('/cms/pages')">取消</button></div>
       </form>
     </div></div>
   </div>
@@ -27,7 +27,7 @@ const form=ref({title:'',slug:'',content:'',template:'',categoryId:undefined,sta
 const tagInput=ref(''),categories=ref([])
 const handleTagInput=()=>{if(!tagInput.value.trim())return;const tags=tagInput.value.split(',').map(t=>t.trim()).filter(t=>t);form.value.tagNames=[...new Set([...(form.value.tagNames||[]),...tags])];tagInput.value=''}
 const removeTag=(i:number)=>form.value.tagNames?.splice(i,1)
-const handleSubmit=async()=>{try{isEdit.value?await api.put(`/pages/${route.params.id}`,form.value):await api.post('/pages',form.value);alert('成功');router.push('/pages')}catch(e:any){alert(e.response?.data?.message||'失败')}}
+const handleSubmit=async()=>{try{isEdit.value?await api.put(`/pages/${route.params.id}`,form.value):await api.post('/pages',form.value);alert('成功');router.push('/cms/pages')}catch(e:any){alert(e.response?.data?.message||'失败')}}
 onMounted(async()=>{const c=await api.get('/categories',{params:{type:'page',pageSize:100}});categories.value=c.data.data.items;if(isEdit.value){const a=await api.get(`/pages/${route.params.id}`);Object.assign(form.value,a.data.data)}})
 </script>
 

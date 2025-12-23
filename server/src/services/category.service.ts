@@ -198,9 +198,11 @@ export class CategoryService extends BaseService<any, CreateCategoryDto, UpdateC
       }
 
       // 不能将子分类设为父分类（避免循环）
-      const isDescendant = await this.isDescendant(id, data.parentId);
-      if (isDescendant) {
-        throw new Error('不能将子分类设为父分类');
+      if (data.parentId !== null) {
+        const isDescendant = await this.isDescendant(id, data.parentId);
+        if (isDescendant) {
+          throw new Error('不能将子分类设为父分类');
+        }
       }
 
       if (data.parentId !== null) {
@@ -270,7 +272,7 @@ export class CategoryService extends BaseService<any, CreateCategoryDto, UpdateC
 
     if (!descendant || !descendant.parentId) return false;
 
-    return this.isDescendant(ancestorId, descendant.parentId);
+    return this.isDescendant(ancestorId, descendant.parentId!);
   }
 
   /**
