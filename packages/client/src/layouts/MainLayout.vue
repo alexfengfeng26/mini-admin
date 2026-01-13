@@ -15,16 +15,21 @@
           <!-- 有子菜单的一级菜单 -->
           <template v-if="menu.children && menu.children.length > 0">
             <div class="nav-group">
-              <div class="nav-item nav-title">
+              <div class="nav-item nav-title" @click="toggleMenu(menu.id)">
                 <span class="nav-icon">{{ getIconDisplay(menu.icon) }}</span>
                 {{ menu.name }}
+                <span class="arrow" :class="{ expanded: expandedMenus[menu.id] }">
+                  {{ expandedMenus[menu.id] ? '▼' : '▶' }}
+                </span>
               </div>
               <!-- 子菜单 -->
-              <div v-for="child in menu.children" :key="child.id">
-                <router-link v-if="child.type === 1 && child.path" :to="child.path" class="nav-item nav-child">
-                  <span class="nav-icon">{{ getIconDisplay(child.icon) }}</span>
-                  {{ child.name }}
-                </router-link>
+              <div v-show="expandedMenus[menu.id]" class="nav-children">
+                <template v-for="child in menu.children" :key="child.id">
+                  <router-link v-if="child && child.type === 1 && child.path" :to="child.path" class="nav-item nav-child">
+                    <span class="nav-icon">{{ getIconDisplay(child.icon) }}</span>
+                    {{ child.name }}
+                  </router-link>
+                </template>
               </div>
             </div>
           </template>
@@ -65,11 +70,26 @@ const router = useRouter()
 // 用户菜单数据
 const userMenus = ref<any[]>([])
 
+// 菜单展开/折叠状态
+const expandedMenus = ref<Record<number, boolean>>({})
+
+// 切换菜单展开/折叠
+const toggleMenu = (menuId: number) => {
+  expandedMenus.value[menuId] = !expandedMenus.value[menuId]
+}
+
 // 获取用户菜单
 const fetchUserMenus = async () => {
   try {
     const response = await api.get('/menus/user')
     userMenus.value = response.data.data || []
+
+    // 默认展开所有有子菜单的菜单
+    userMenus.value.forEach(menu => {
+      if (menu.children && menu.children.length > 0) {
+        expandedMenus.value[menu.id] = true
+      }
+    })
   } catch (error) {
     console.warn('获取用户菜单失败:', error)
     // 如果获取失败，显示默认的空菜单
@@ -189,11 +209,30 @@ onMounted(() => {
 .nav-title {
   font-weight: 500;
   background: rgba(255, 255, 255, 0.05);
-  cursor: default;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .nav-title:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+
+.arrow {
+  margin-left: auto;
+  font-size: 10px;
+  transition: transform 0.3s;
+}
+
+.arrow.expanded {
+  transform: rotate(90deg);
+}
+
+.nav-children {
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
 }
 
 .nav-child {
