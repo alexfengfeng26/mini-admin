@@ -65,7 +65,7 @@ const router = useRouter()
 
 const isEdit = computed(() => !!route.params.id)
 const roleId = computed(() => parseInt(route.params.id as string))
-const backUrl = '/roles'
+const backUrl = '/system/roles'
 
 // 表单数据
 const form = ref<CreateRoleDto & UpdateRoleDto>({

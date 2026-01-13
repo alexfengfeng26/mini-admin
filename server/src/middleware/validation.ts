@@ -175,6 +175,45 @@ export const userValidationSchema: ValidationSchema = {
   },
 };
 
+// 用户更新验证模式（密码不是必填）
+export const userUpdateValidationSchema: ValidationSchema = {
+  required: ['username', 'email'],
+  fields: {
+    username: {
+      type: 'string',
+      minLength: 3,
+      maxLength: 50,
+      pattern: /^[a-zA-Z0-9_]+$/,
+    },
+    email: {
+      type: 'email',
+      maxLength: 100,
+    },
+    password: {
+      type: 'string',
+      minLength: 6,
+      maxLength: 100,
+    },
+    nickname: {
+      type: 'string',
+      maxLength: 50,
+    },
+    phone: {
+      type: 'string',
+      maxLength: 20,
+      pattern: /^[0-9+\-\s()]+$/,
+    },
+    status: {
+      type: 'number',
+      min: 0,
+      max: 1,
+    },
+    roleIds: {
+      type: 'array',
+    },
+  },
+};
+
 export const roleValidationSchema: ValidationSchema = {
   required: ['name', 'code'],
   fields: {
@@ -202,7 +241,7 @@ export const roleValidationSchema: ValidationSchema = {
 };
 
 export const menuValidationSchema: ValidationSchema = {
-  required: ['name', 'path', 'type'],
+  required: ['name', 'type'],
   fields: {
     name: {
       type: 'string',
@@ -217,15 +256,20 @@ export const menuValidationSchema: ValidationSchema = {
       type: 'string',
       maxLength: 50,
     },
-    type: {
+    component: {
       type: 'string',
-      pattern: /^(menu|button)$/,
+      maxLength: 200,
+    },
+    type: {
+      type: 'number',
+      min: 1,
+      max: 2,
     },
     parentId: {
       type: 'number',
       min: 0,
     },
-    sortOrder: {
+    sort: {
       type: 'number',
       min: 0,
     },
@@ -237,7 +281,6 @@ export const menuValidationSchema: ValidationSchema = {
     permission: {
       type: 'string',
       maxLength: 100,
-      pattern: /^[a-z:a-z_]+$/,
     },
   },
 };

@@ -6,7 +6,7 @@
     <template v-else>
       <div class="page-header">
         <h1 class="page-title">用户管理</h1>
-        <router-link to="/users/create" class="btn btn-primary">
+        <router-link to="/system/users/create" class="btn btn-primary">
           + 新增用户
         </router-link>
       </div>
@@ -68,7 +68,7 @@
                 <td>{{ formatDate(user.createdAt) }}</td>
                 <td>
                   <router-link
-                    :to="`/users/${user.id}/edit`"
+                    :to="`/system/users/${user.id}/edit`"
                     class="btn btn-secondary"
                     style="margin-right: 8px;"
                   >

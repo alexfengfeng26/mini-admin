@@ -109,10 +109,17 @@ export class RoleService extends BaseService<any, CreateRoleDto, UpdateRoleDto, 
       await this.validateUniqueCode(data.code, id);
     }
 
+    // 构建更新数据 - 只包含 Role 模型的字段
+    const updateData: any = {};
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.code !== undefined) updateData.code = data.code;
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.status !== undefined) updateData.status = data.status;
+
     // 更新角色信息
     await this.model.update({
       where: { id },
-      data,
+      data: updateData,
     });
 
     // 更新菜单权限分配

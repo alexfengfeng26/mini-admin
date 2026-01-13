@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { UserController } from '../controllers/user.controller';
 import { authenticate } from '../middleware/auth';
 import { requirePermission } from '../middleware/rbac';
-import { validateInput, userValidationSchema } from '../middleware/validation';
+import { validateInput, userValidationSchema, userUpdateValidationSchema } from '../middleware/validation';
 
 const router = Router();
 const userController = new UserController();
@@ -36,7 +36,7 @@ router.post(
 router.put(
   '/:id',
   requirePermission('user:update'),
-  validateInput(userValidationSchema),
+  validateInput(userUpdateValidationSchema),
   userController.update
 );
 

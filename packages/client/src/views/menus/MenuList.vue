@@ -2,7 +2,7 @@
   <div class="menu-list">
     <div class="page-header">
       <h1 class="page-title">菜单管理</h1>
-      <router-link to="/menus/create" class="btn btn-primary">
+      <router-link to="/system/menus/create" class="btn btn-primary">
         + 新增菜单
       </router-link>
     </div>
@@ -49,7 +49,7 @@
                 <td>{{ formatDate(menu.createdAt) }}</td>
                 <td>
                   <router-link
-                    :to="`/menus/${menu.id}/edit`"
+                    :to="`/system/menus/${menu.id}/edit`"
                     class="btn btn-secondary"
                     style="margin-right: 8px;"
                   >
@@ -88,7 +88,7 @@
                         <td>{{ formatDate(child.createdAt) }}</td>
                         <td>
                           <router-link
-                            :to="`/menus/${child.id}/edit`"
+                            :to="`/system/menus/${child.id}/edit`"
                             class="btn btn-secondary"
                             style="margin-right: 8px;"
                           >

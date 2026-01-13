@@ -22,7 +22,7 @@ const router = useRouter()
 
 const isEdit = computed(() => !!route.params.id)
 const userId = computed(() => parseInt(route.params.id as string))
-const backUrl = '/users'
+const backUrl = '/system/users'
 
 // 表单数据
 const form = ref<CreateUserDto & UpdateUserDto>({

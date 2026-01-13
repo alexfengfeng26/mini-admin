@@ -70,9 +70,21 @@ export class MenuService extends BaseService<any, CreateMenuDto, UpdateMenuDto, 
       }
     }
 
+    // 构建更新数据 - 只包含 Menu 模型的字段
+    const updateData: any = {};
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.path !== undefined) updateData.path = data.path;
+    if (data.component !== undefined) updateData.component = data.component;
+    if (data.icon !== undefined) updateData.icon = data.icon;
+    if (data.sort !== undefined) updateData.sort = data.sort;
+    if (data.parentId !== undefined) updateData.parentId = data.parentId;
+    if (data.status !== undefined) updateData.status = data.status;
+    if (data.type !== undefined) updateData.type = data.type;
+    if (data.permission !== undefined) updateData.permission = data.permission;
+
     return this.model.update({
       where: { id },
-      data,
+      data: updateData,
     });
   }
 

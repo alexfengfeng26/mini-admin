@@ -6,7 +6,7 @@
     <template v-else>
       <div class="page-header">
         <h1 class="page-title">角色管理</h1>
-        <router-link to="/roles/create" class="btn btn-primary">
+        <router-link to="/system/roles/create" class="btn btn-primary">
           + 新增角色
         </router-link>
       </div>
@@ -48,7 +48,7 @@
                 <td>{{ formatDate(role.createdAt) }}</td>
                 <td>
                   <router-link
-                    :to="`/roles/${role.id}/edit`"
+                    :to="`/system/roles/${role.id}/edit`"
                     class="btn btn-secondary"
                     style="margin-right: 8px;"
                   >

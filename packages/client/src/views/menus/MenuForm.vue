@@ -22,7 +22,7 @@ const router = useRouter()
 
 const isEdit = computed(() => !!route.params.id)
 const menuId = computed(() => parseInt(route.params.id as string))
-const backUrl = '/menus'
+const backUrl = '/system/menus'
 
 // 表单数据
 const form = ref<CreateMenuDto & UpdateMenuDto>({
