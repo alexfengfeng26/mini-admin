@@ -122,7 +122,40 @@ BaseService<T, CreateDto, UpdateDto, QueryDto>
 - `cms.types.ts` - CMS 内容类型
 - `user.types.ts`, `role.types.ts`, `menu.types.ts` - 系统管理类型
 
-前后端通过 tsconfig paths 引用：`@types/*` 映射到 `../../types`
+**TypeScript 路径配置：**
+
+后端 (`server/tsconfig.json`)：
+```json
+{
+  "baseUrl": ".",
+  "paths": {
+    "@/*": ["./src/*"],
+    "@types/*": ["../types/*"]
+  }
+}
+```
+
+前端 (`packages/client/tsconfig.json`)：
+```json
+{
+  "baseUrl": ".",
+  "paths": {
+    "@/*": ["./src/*"],
+    "@types/*": ["../../types/*"]
+  }
+}
+```
+
+**使用示例：**
+```typescript
+// 后端引用
+import { User } from '@types/user.types'
+import { PaginatedResponse } from '@types/shared.types'
+
+// 前端引用
+import type { LoginRequest, LoginResponse } from '@types'
+import { PaginatedResponse } from '@types/shared.types'
+```
 
 ## 环境配置
 
@@ -132,6 +165,15 @@ DATABASE_URL="mysql://user:pass@localhost:3306/mini_admin"
 JWT_SECRET="your-secret-key"
 JWT_EXPIRES_IN="24h"
 PORT=3000
+```
+
+**生成安全的 JWT_SECRET：**
+```bash
+# 使用 OpenSSL 生成 32 字符的随机密钥
+openssl rand -base64 32
+
+# 或使用 Node.js
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
 ## CMS 内容类型
@@ -155,6 +197,177 @@ PORT=3000
 4. **权限系统：** 基于角色和菜单的 RBAC，菜单可配置为按钮级权限
 5. **API 响应格式：** 统一使用 `utils/response.ts` 中的 `successResponse` 格式
 
+## 开发工作流最佳实践
+
+### 添加新的 CMS 内容类型
+
+1. **定义 Prisma 模型** (`server/prisma/schema.prisma`)
+2. **创建类型定义** (`types/cms.types.ts` 或新建文件)
+3. **创建 Service** (`server/src/services/`)，继承 `BaseCmsService`
+4. **创建 Controller** (`server/src/controllers/`)
+5. **创建 Routes** (`server/src/routes/`)
+6. **创建前端页面** (`packages/client/src/views/`)
+
+### 添加新的系统管理功能
+
+1. **定义 Prisma 模型**
+2. **创建类型定义** (`types/`)
+3. **创建 Service** (`server/src/services/`)，继承 `BaseService`
+4. **创建 Controller、Routes**
+5. **更新前端路由** (`packages/client/src/router/index.ts`)
+6. **创建前端页面组件**
+
 ## Node 版本要求
 
 Node.js >= 18.0.0
+
+## API 响应格式
+
+所有 API 统一使用以下响应格式（`server/src/utils/response.ts`）：
+
+**成功响应：**
+```typescript
+{
+  success: true,
+  data: T,
+  message: string,
+  timestamp: string
+}
+```
+
+**分页响应：**
+```typescript
+{
+  success: true,
+  data: {
+    items: T[],
+    total: number,
+    page: number,
+    pageSize: number,
+    totalPages: number
+  },
+  message: string,
+  timestamp: string
+}
+```
+
+**错误响应：**
+```typescript
+{
+  success: false,
+  data: null,
+  message: string,
+  timestamp: string
+}
+```
+
+## 中间件使用
+
+**认证中间件** (`server/src/middleware/auth.ts`)：
+- `authenticate` - JWT 认证，验证 Bearer Token
+- `optionalAuth` - 可选认证，不强制要求登录
+
+**权限中间件** (`server/src/middleware/rbac.ts`)：
+- `requirePermission(permission)` - 检查单个权限
+- `requirePermissions(permissions[])` - 检查多个权限（需全部拥有）
+- `requireRole(roleCode)` - 检查角色
+
+**使用示例：**
+```typescript
+router.get('/users', authenticate, requirePermission('user:list'), controller.list)
+router.post('/users', authenticate, requirePermission('user:create'), controller.create)
+```
+
+## 故障排除
+
+### 数据库连接问题
+```bash
+# 检查 MySQL 服务状态
+# Windows
+net start MySQL
+
+# Linux
+sudo systemctl status mysql
+
+# 测试连接
+mysql -u root -p -h localhost -P 3306
+```
+
+### Prisma 迁移问题
+```bash
+# 重置数据库（危险操作，会删除所有数据）
+cd server
+npx prisma migrate reset
+
+# 重新生成 Prisma Client
+npm run prisma:generate
+
+# 查看迁移历史
+npx prisma migrate status
+```
+
+### 前端构建问题
+```bash
+# 清理 node_modules 和重新安装
+cd packages/client
+rm -rf node_modules dist
+npm install
+npm run build
+```
+
+### 类型错误
+```bash
+# 重新生成 Prisma Client（确保类型同步）
+cd server
+npm run prisma:generate
+
+# 检查 TypeScript 配置
+# 确保 tsconfig.json 中的 paths 配置正确
+```
+
+### 端口占用
+```bash
+# 查看端口占用
+# Windows
+netstat -ano | findstr :3000
+
+# Linux/Mac
+lsof -ti:3000
+
+# 终止进程
+# Windows
+taskkill /PID <进程ID> /F
+
+# Linux/Mac
+kill -9 <进程ID>
+```
+
+## 日志和调试
+
+### 后端日志
+- **请求日志：** 通过 `logger.ts` 中间件记录所有 HTTP 请求
+- **错误日志：** 统一在 `errorHandler.ts` 中间件处理
+- **查看日志：** 开发模式下控制台直接输出
+
+### 前端调试
+- **Vue DevTools：** 安装浏览器扩展进行组件调试
+- **API 调试：** 使用浏览器 Network 面板查看请求
+- **Pinia 状态：** 通过 Vue DevTools 查看 store 状态
+
+### 数据库调试
+```bash
+# 打开 Prisma Studio 可视化界面
+cd server
+npm run prisma:studio
+
+# 在浏览器中访问 http://localhost:5555
+```
+
+## 安全注意事项
+
+1. **JWT 密钥：** 生产环境必须使用强随机密钥，不要使用示例值
+2. **数据库密码：** 使用强密码，不要硬编码在代码中
+3. **环境变量：** `.env` 文件不要提交到版本控制
+4. **CORS 配置：** 生产环境限制允许的源
+5. **输入验证：** 所有用户输入都需验证（使用 `validation.ts` 中间件）
+6. **SQL 注入：** 使用 Prisma ORM 自动防护
